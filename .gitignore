@@ -1,0 +1,7 @@
+# Claude Code config (contains secrets — never publish)
+.claude/
+
+# Google Drive / OS artifacts
+desktop.ini
+.DS_Store
+Thumbs.db

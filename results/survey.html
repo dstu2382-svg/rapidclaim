@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey responses — RapidClaim (designer view)</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-view="survey">
+  <header class="site-header">
+    <div class="brand">RapidClaim<span class="brand-tag">designer view</span></div>
+    <nav class="view-nav">
+      <a href="claims.html">Claims</a>
+      <a href="survey.html" class="active">Survey</a>
+      <a href="../index.html">← Prototype</a>
+    </nav>
+  </header>
+
+  <main class="results-main">
+    <h1>Survey responses</h1>
+    <p class="lead">Answers collected from the survey section, most recent first.</p>
+
+    <div class="results-bar">
+      <span id="results-count" class="results-count"></span>
+      <div class="results-actions">
+        <button type="button" class="btn btn-secondary" id="refresh">Refresh</button>
+        <button type="button" class="btn btn-secondary" id="download-all">Download CSV</button>
+        <button type="button" class="btn btn-ghost" id="clear-all">Clear all</button>
+      </div>
+    </div>
+
+    <div id="results-root"></div>
+
+    <p class="note">
+      Note: this prototype has no server, so responses are stored in <em>this browser</em> only.
+      You'll see runs completed on this device. To gather results from other testers, collect the
+      CSV/JSON they download, or ask about adding a shared backend / form service.
+    </p>
+  </main>
+
+  <script src="../js/storage.js"></script>
+  <script src="results.js"></script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RapidClaim — Property Claim Prototype</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">RapidClaim<span class="brand-tag">prototype</span></div>
+    <ol class="progress" aria-label="Progress">
+      <li data-step="intro" class="active">1 · Welcome</li>
+      <li data-step="claim">2 · Claim</li>
+      <li data-step="survey">3 · Survey</li>
+    </ol>
+  </header>
+
+  <main>
+    <!-- SECTION 1: INTRO -->
+    <section id="intro" class="step active">
+      <h1>Welcome — thanks for testing our prototype</h1>
+      <p class="lead">
+        You're helping us trial <strong>RapidClaim</strong>, an idea for a property insurance
+        service that lets people log a claim and get an instant assessment and payout offer.
+      </p>
+      <div class="callout">
+        <h2>Before you start</h2>
+        <ul>
+          <li>This is a <strong>prototype</strong> — nothing here is a real claim and no real money is involved.</li>
+          <li>The assessment result is <strong>simulated</strong> for demonstration.</li>
+          <li>Your answers stay <strong>on this device</strong> (in your browser) and can be downloaded at the end.</li>
+          <li>It only takes a few minutes. Please imagine you've had some property damage and want to make a claim.</li>
+        </ul>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" data-goto="claim">Start the claim →</button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CLAIM APP -->
+    <section id="claim" class="step">
+      <h1>Log your property claim</h1>
+      <p class="lead">Tell us a little about what happened. We'll assess it right away.</p>
+
+      <form id="claim-form" novalidate>
+        <div class="field">
+          <label for="claimant-name">Your name</label>
+          <input type="text" id="claimant-name" name="name" autocomplete="name" required
+                 placeholder="e.g. Alex Taylor">
+          <p class="error" data-for="name"></p>
+        </div>
+
+        <div class="field">
+          <label for="claim-type">Type of claim</label>
+          <select id="claim-type" name="claimType" required>
+            <option value="" disabled selected>Choose one…</option>
+            <option value="Water">Water damage</option>
+            <option value="Fire">Fire damage</option>
+            <option value="Theft">Theft / burglary</option>
+            <option value="Storm">Storm damage</option>
+            <option value="Accidental">Accidental damage</option>
+            <option value="Other">Other</option>
+          </select>
+          <p class="error" data-for="claimType"></p>
+        </div>
+
+        <div class="field">
+          <label for="estimated-loss">Estimated loss ($)</label>
+          <input type="number" id="estimated-loss" name="estimatedLoss" min="0" step="1"
+                 inputmode="numeric" required placeholder="e.g. 2500">
+          <p class="hint">Your best guess of the repair or replacement cost.</p>
+          <p class="error" data-for="estimatedLoss"></p>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn btn-ghost" data-goto="intro">← Back</button>
+          <button type="submit" class="btn btn-primary">Assess my claim</button>
+        </div>
+      </form>
+
+      <!-- Assessing spinner -->
+      <div id="assessing" class="assessing" hidden>
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Assessing your claim…</p>
+      </div>
+
+      <!-- Decision result -->
+      <div id="decision" class="decision" hidden>
+        <div class="decision-badge" id="decision-badge"></div>
+        <h2 id="decision-title"></h2>
+        <p id="decision-message"></p>
+        <div class="payout" id="payout-block">
+          <span class="payout-label">Payout offer</span>
+          <span class="payout-amount" id="payout-amount"></span>
+        </div>
+        <p class="ref">Reference: <span id="claim-ref"></span></p>
+
+        <div class="options">
+          <div class="option-card">
+            <button type="button" class="btn btn-primary btn-block" id="accept-btn">Accept payout →</button>
+            <p class="option-desc">Get paid now. We'll ask for the bank account you'd like the offer
+              deposited into, and settle your claim straight away.</p>
+          </div>
+          <div class="option-card">
+            <button type="button" class="btn btn-secondary btn-block" id="fullclaim-btn">I'd like to proceed to a full claim →</button>
+            <p class="option-desc">Prefer a thorough review? We'll collect more detail and a claims
+              specialist will assess your claim in full before settling.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accept payout: bank details -->
+      <div id="payment" class="decision" hidden>
+        <h2>Accept your payout</h2>
+        <p>Enter the account you'd like your <strong id="payment-amount"></strong> paid into.</p>
+        <form id="payment-form" novalidate>
+          <div class="field">
+            <label for="account-name">Account holder name</label>
+            <input type="text" id="account-name" name="accountName" required
+                   placeholder="e.g. Alex Taylor">
+            <p class="error" data-for="accountName"></p>
+          </div>
+          <div class="field">
+            <label for="routing-number">Routing number</label>
+            <input type="text" id="routing-number" name="routingNumber" inputmode="numeric"
+                   required placeholder="9 digits">
+            <p class="error" data-for="routingNumber"></p>
+          </div>
+          <div class="field">
+            <label for="account-number">Account number</label>
+            <input type="text" id="account-number" name="accountNumber" inputmode="numeric"
+                   required placeholder="Your account number">
+            <p class="error" data-for="accountNumber"></p>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn btn-ghost" id="payment-back">← Back</button>
+            <button type="submit" class="btn btn-primary">Confirm &amp; get paid</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Full claim acknowledgement -->
+      <div id="fullclaim" class="decision" hidden>
+        <div class="decision-badge badge-referred">→</div>
+        <h2>Let's do a full claim</h2>
+        <p>Thanks — we've logged your request for a full assessment
+          (ref <strong id="fullclaim-ref"></strong>). A claims specialist will review the details
+          you've provided and be in touch with a final decision.</p>
+        <p>For now, let's finish with a few quick questions.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" data-goto="survey">Continue to survey →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: SURVEY -->
+    <section id="survey" class="step">
+      <h1>How was that?</h1>
+      <p class="lead">A few quick questions about your experience. Then you're done.</p>
+
+      <form id="survey-form" novalidate>
+        <h2 class="section-heading">About you</h2>
+
+        <div class="field">
+          <label for="survey-name">Name</label>
+          <input type="text" id="survey-name" name="name" autocomplete="name" required
+                 placeholder="e.g. Alex Taylor">
+          <p class="error" data-for="name"></p>
+        </div>
+
+        <div class="field">
+          <label for="survey-age">Age</label>
+          <input type="number" id="survey-age" name="age" min="0" max="120" step="1"
+                 inputmode="numeric" required placeholder="e.g. 34">
+          <p class="error" data-for="age"></p>
+        </div>
+
+        <div class="field">
+          <label for="survey-postcode">Postcode</label>
+          <input type="text" id="survey-postcode" name="postcode" autocomplete="postal-code"
+                 required placeholder="e.g. 2000">
+          <p class="error" data-for="postcode"></p>
+        </div>
+
+        <div class="field">
+          <label for="survey-education">Education level</label>
+          <select id="survey-education" name="education" required>
+            <option value="" disabled selected>Choose one…</option>
+            <option value="Less than high school">Less than high school</option>
+            <option value="High school">High school</option>
+            <option value="Trade / vocational">Trade / vocational</option>
+            <option value="Diploma">Diploma</option>
+            <option value="Bachelor's degree">Bachelor's degree</option>
+            <option value="Postgraduate degree">Postgraduate degree</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+          <p class="error" data-for="education"></p>
+        </div>
+
+        <div class="field">
+          <label for="survey-gender">Gender</label>
+          <select id="survey-gender" name="gender" required>
+            <option value="" disabled selected>Choose one…</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer to self-describe">Prefer to self-describe</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+          <p class="error" data-for="gender"></p>
+        </div>
+
+        <h2 class="section-heading">Your experience</h2>
+
+        <fieldset class="field">
+          <legend>Have you made a claim before?</legend>
+          <div class="rating" data-name="madeClaimBefore">
+            <label><input type="radio" name="madeClaimBefore" value="Yes" required><span>Yes</span></label>
+            <label><input type="radio" name="madeClaimBefore" value="No"><span>No</span></label>
+          </div>
+          <p class="error" data-for="madeClaimBefore"></p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Do you understand the proposed solution?</legend>
+          <div class="rating" data-name="understandSolution">
+            <label><input type="radio" name="understandSolution" value="Yes" required><span>Yes</span></label>
+            <label><input type="radio" name="understandSolution" value="No"><span>No</span></label>
+          </div>
+          <p class="error" data-for="understandSolution"></p>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>What is your desired outcome when logging a claim?</legend>
+          <div class="rating" data-name="desiredOutcome">
+            <label><input type="radio" name="desiredOutcome" value="Maximum payout" required><span>Maximum payout</span></label>
+            <label><input type="radio" name="desiredOutcome" value="Minimize paperwork"><span>Minimize paperwork</span></label>
+          </div>
+          <p class="error" data-for="desiredOutcome"></p>
+        </fieldset>
+
+        <div class="field">
+          <label for="comments">Any comments or suggestions? <span class="optional">(optional)</span></label>
+          <textarea id="comments" name="comments" rows="4"
+                    placeholder="What worked well? What would you change?"></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Finish</button>
+        </div>
+      </form>
+
+      <!-- Thank you / download -->
+      <div id="thanks" class="thanks" hidden>
+        <div class="decision-badge badge-approved">✓</div>
+        <h2>Thank you!</h2>
+        <p>Your responses have been saved on this device. You can download a copy below.</p>
+        <div class="actions actions-wrap">
+          <button type="button" class="btn btn-secondary" id="download-json">Download JSON</button>
+          <button type="button" class="btn btn-secondary" id="download-csv">Download CSV</button>
+          <button type="button" class="btn btn-ghost" id="restart-btn">Start over</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>RapidClaim prototype · for usability testing only · no real claims processed</p>
+  </footer>
+
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/survey.js"></script>
+</body>
+</html>
