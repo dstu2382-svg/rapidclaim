@@ -6,18 +6,53 @@
   var STEP_ORDER = ["intro", "claim", "survey"];
 
   // ---------- Navigation ----------
+  function ensureProgress() {
+    if (!RC.state.progress) {
+      RC.state.progress = { intro: true, claim: false, survey: false };
+    }
+    return RC.state.progress;
+  }
+
+  function isUnlocked(step) {
+    return !!ensureProgress()[step];
+  }
+
+  // A step is "unlocked" once the tester reaches it by completing the previous
+  // step's action. Unlocked steps stay reachable via the top-left nav links.
+  function unlock(step) {
+    var p = ensureProgress();
+    if (!p[step]) {
+      p[step] = true;
+      RC.save();
+    }
+  }
+
+  // Reflect the current step + which steps are clickable in the progress nav.
+  function renderNav(activeId) {
+    var currentIndex = STEP_ORDER.indexOf(activeId);
+    document.querySelectorAll(".progress li").forEach(function (li) {
+      var step = li.dataset.step;
+      var idx = STEP_ORDER.indexOf(step);
+      var enabled = isUnlocked(step) && idx !== currentIndex;
+      li.classList.toggle("active", idx === currentIndex);
+      li.classList.toggle("done", idx < currentIndex);
+      li.classList.toggle("nav-enabled", enabled);
+      if (enabled) {
+        li.setAttribute("role", "link");
+        li.setAttribute("tabindex", "0");
+      } else {
+        li.removeAttribute("role");
+        li.removeAttribute("tabindex");
+      }
+    });
+  }
+
   function showStep(id) {
+    unlock(id);
     document.querySelectorAll(".step").forEach(function (s) {
       s.classList.toggle("active", s.id === id);
     });
-
-    var currentIndex = STEP_ORDER.indexOf(id);
-    document.querySelectorAll(".progress li").forEach(function (li) {
-      var idx = STEP_ORDER.indexOf(li.dataset.step);
-      li.classList.toggle("active", idx === currentIndex);
-      li.classList.toggle("done", idx < currentIndex);
-    });
-
+    renderNav(id);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -32,6 +67,44 @@
       showStep(trigger.dataset.goto);
     }
   });
+
+  // Top-left progress pills act as links to any already-unlocked step.
+  var progressEl = document.querySelector(".progress");
+  if (progressEl) {
+    progressEl.addEventListener("click", function (e) {
+      var li = e.target.closest("li[data-step]");
+      if (li && li.classList.contains("nav-enabled")) {
+        showStep(li.dataset.step);
+      }
+    });
+    progressEl.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var li = e.target.closest("li[data-step]");
+      if (li && li.classList.contains("nav-enabled")) {
+        e.preventDefault();
+        showStep(li.dataset.step);
+      }
+    });
+  }
+
+  // ---------- Restore cached details ----------
+  // The session is already persisted to localStorage; re-fill the claim and
+  // payment fields so nothing is lost when navigating back or reloading.
+  function hydrate() {
+    var s = RC.state;
+    if (form) {
+      if (s.claim.name) form.name.value = s.claim.name;
+      if (s.claim.claimType) form.claimType.value = s.claim.claimType;
+      if (s.claim.estimatedLoss !== null && s.claim.estimatedLoss !== undefined && s.claim.estimatedLoss !== "") {
+        form.estimatedLoss.value = s.claim.estimatedLoss;
+      }
+    }
+    if (paymentForm) {
+      if (s.payment.accountName) paymentForm.accountName.value = s.payment.accountName;
+      if (s.payment.routingNumber) paymentForm.routingNumber.value = s.payment.routingNumber;
+      if (s.payment.accountNumber) paymentForm.accountNumber.value = s.payment.accountNumber;
+    }
+  }
 
   // ---------- Validation helpers ----------
   function setError(name, message) {
@@ -157,6 +230,13 @@
   var fullclaimEl = document.getElementById("fullclaim");
   var paymentForm = document.getElementById("payment-form");
 
+  // Back from the offer to the claim form (to review/edit the details).
+  document.getElementById("decision-back").addEventListener("click", function () {
+    decisionEl.hidden = true;
+    form.hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   // Accept the payout -> collect bank details.
   document.getElementById("accept-btn").addEventListener("click", function () {
     RC.state.decision.path = "payout";
@@ -208,6 +288,13 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+  // Back from the full-claim acknowledgement to the offer.
+  document.getElementById("fullclaim-back").addEventListener("click", function () {
+    fullclaimEl.hidden = true;
+    decisionEl.hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   // ---------- Reset the claim section UI (used by "Start over") ----------
   RC.resetClaimUI = function () {
     form.reset();
@@ -224,4 +311,9 @@
     setError("routingNumber", "");
     setError("accountNumber", "");
   };
+
+  // ---------- Init ----------
+  // Restore any cached entries and render the nav for the opening step.
+  hydrate();
+  renderNav("intro");
 })(window, document);

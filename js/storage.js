@@ -10,6 +10,9 @@
   function emptyState() {
     return {
       timestamp: new Date().toISOString(),
+      // Which steps the tester has unlocked (reached by completing the prior
+      // action). Drives the clickable progress nav at the top of the page.
+      progress: { intro: true, claim: false, survey: false },
       claim: { name: "", claimType: "", estimatedLoss: null },
       decision: { outcome: "", payout: null, reference: "", accepted: null, path: "" },
       payment: { accountName: "", routingNumber: "", accountNumber: "" },
@@ -25,7 +28,14 @@
   function load() {
     try {
       var raw = window.localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : null;
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      // Older cached sessions may predate `progress` — backfill it so the
+      // navigation logic always has something to read.
+      if (!parsed.progress) {
+        parsed.progress = { intro: true, claim: false, survey: false };
+      }
+      return parsed;
     } catch (e) {
       return null;
     }

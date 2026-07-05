@@ -83,4 +83,23 @@
     RC.resetClaimUI();
     RC.showStep("intro");
   });
+
+  // ---------- Restore cached survey answers ----------
+  // Re-fill fields from the saved session so navigating back (or reloading)
+  // keeps whatever the tester already entered.
+  (function hydrateSurvey() {
+    var s = RC.state.survey;
+    INPUTS.forEach(function (name) {
+      if (s[name] !== null && s[name] !== undefined && s[name] !== "") {
+        form[name].value = s[name];
+      }
+    });
+    CHOICES.forEach(function (name) {
+      if (s[name]) {
+        var el = form.querySelector('input[name="' + name + '"][value="' + s[name] + '"]');
+        if (el) el.checked = true;
+      }
+    });
+    if (s.comments) form.comments.value = s.comments;
+  })();
 })(window, document);

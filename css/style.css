@@ -92,6 +92,23 @@ body {
   background: #f0fdf4;
 }
 
+/* Unlocked steps become clickable links back/forward through the flow. */
+.progress li.nav-enabled {
+  cursor: pointer;
+}
+.progress li.nav-enabled:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.progress li.nav-enabled.done:hover {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.progress li.nav-enabled:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .4);
+  outline-offset: 2px;
+}
+
 /* ---------- Layout ---------- */
 main {
   max-width: 640px;
