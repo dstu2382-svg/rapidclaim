@@ -11,8 +11,9 @@
     <div class="brand">RapidClaim<span class="brand-tag">prototype</span></div>
     <ol class="progress" aria-label="Progress">
       <li data-step="intro" class="active">1 · Welcome</li>
-      <li data-step="claim">2 · Claim</li>
-      <li data-step="survey">3 · Survey</li>
+      <li data-step="claim">2 · Claim details</li>
+      <li data-step="outcome">3 · Assessment outcome</li>
+      <li data-step="survey">4 · Survey</li>
     </ol>
   </header>
 
@@ -38,9 +39,9 @@
       </div>
     </section>
 
-    <!-- SECTION 2: CLAIM APP -->
+    <!-- SECTION 2: CLAIM DETAILS -->
     <section id="claim" class="step">
-      <h1>Log your property claim</h1>
+      <h1>Your claim details</h1>
       <p class="lead">Tell us a little about what happened. We'll assess it right away.</p>
 
       <form id="claim-form" novalidate>
@@ -51,20 +52,111 @@
           <p class="error" data-for="name"></p>
         </div>
 
+        <!-- Q1 · Cause of damage -->
         <div class="field">
-          <label for="claim-type">Type of claim</label>
-          <select id="claim-type" name="claimType" required>
+          <label for="claim-cause">What caused the damage?</label>
+          <select id="claim-cause" name="causeOfDamage" required>
             <option value="" disabled selected>Choose one…</option>
-            <option value="Water">Water damage</option>
-            <option value="Fire">Fire damage</option>
-            <option value="Theft">Theft / burglary</option>
-            <option value="Storm">Storm damage</option>
-            <option value="Accidental">Accidental damage</option>
+            <option value="Storm / hail / flood">Storm, hail or flood</option>
+            <option value="Escape of water / leak">Escape of water or leak</option>
+            <option value="Fire">Fire</option>
+            <option value="Theft / break-in">Theft or break-in</option>
+            <option value="Tenant damage">Tenant damage</option>
+            <option value="Accidental damage">Accidental damage</option>
+            <option value="Fallen tree">Fallen tree</option>
             <option value="Other">Other</option>
           </select>
-          <p class="error" data-for="claimType"></p>
+          <p class="error" data-for="causeOfDamage"></p>
+          <details class="why">
+            <summary>Why we ask</summary>
+            <p>The cause of damage is the biggest factor in whether a claim is covered. Telling
+               us upfront lets us check it against your policy straight away — so you know early
+               whether you're covered.</p>
+          </details>
         </div>
 
+        <!-- Q2 · When it happened -->
+        <div class="field">
+          <label for="claim-date">When did it happen?</label>
+          <div class="field-row">
+            <input type="date" id="claim-date" name="dateOfDamage" required>
+            <input type="time" id="claim-time" name="timeOfDamage" aria-label="Approximate time (optional)">
+          </div>
+          <p class="hint">Date required · approximate time if you know it.</p>
+          <p class="error" data-for="dateOfDamage"></p>
+          <details class="why">
+            <summary>Why we ask</summary>
+            <p>The date lets us cross-check against weather records and declared events in your
+               area. If your damage lines up with a known event, it's effectively
+               pre-validated — no waiting to prove it happened.</p>
+          </details>
+        </div>
+
+        <!-- Q3 · What was damaged and where -->
+        <fieldset class="field">
+          <legend>What was damaged, and where in the property?</legend>
+          <div class="checklist" data-name="damagedAreas">
+            <label><input type="checkbox" name="damagedAreas" value="Roof"><span>Roof</span></label>
+            <label><input type="checkbox" name="damagedAreas" value="Ceilings / walls"><span>Ceilings / walls</span></label>
+            <label><input type="checkbox" name="damagedAreas" value="Flooring / carpet"><span>Flooring / carpet</span></label>
+            <label><input type="checkbox" name="damagedAreas" value="Kitchen / cabinetry"><span>Kitchen / cabinetry</span></label>
+            <label><input type="checkbox" name="damagedAreas" value="Contents"><span>Contents</span></label>
+            <label><input type="checkbox" name="damagedAreas" value="Fence / external"><span>Fence / external</span></label>
+          </div>
+          <p class="error" data-for="damagedAreas"></p>
+
+          <label for="damage-extent" class="sub-label">Roughly how extensive is it?</label>
+          <select id="damage-extent" name="damageExtent" required>
+            <option value="" disabled selected>Choose one…</option>
+            <option value="Minor">Minor — small area, cosmetic</option>
+            <option value="Moderate">Moderate — one room / section</option>
+            <option value="Major">Major — multiple rooms / structural</option>
+            <option value="Severe">Severe — widespread / property-wide</option>
+          </select>
+          <p class="error" data-for="damageExtent"></p>
+          <details class="why">
+            <summary>Why we ask</summary>
+            <p>Damage type, location and extent map to our repair-cost benchmarks, so we can give
+               you an indicative settlement range and confirm it clears your excess right away.</p>
+          </details>
+        </fieldset>
+
+        <!-- Q4 · Photos / videos -->
+        <div class="field">
+          <label for="claim-photos">Upload photos or videos of the damage <span class="optional">(recommended)</span></label>
+          <input type="file" id="claim-photos" name="photos" accept="image/*,video/*" multiple>
+          <p class="hint">Show us the whole room first, then close-ups of the damage.</p>
+          <p class="hint" id="photo-status"></p>
+          <details class="why">
+            <summary>Why we ask</summary>
+            <p>Photos are the evidence only you have. We compare them against thousands of assessed
+               claims to validate the damage — replacing the slow first assessor visit.</p>
+          </details>
+        </div>
+
+        <!-- Q5 · Safety triage -->
+        <fieldset class="field">
+          <legend>Is the property currently safe and liveable?</legend>
+          <div class="rating" data-name="safeLiveable">
+            <label><input type="radio" name="safeLiveable" value="Yes" required><span>Yes</span></label>
+            <label><input type="radio" name="safeLiveable" value="No"><span>No</span></label>
+          </div>
+          <p class="error" data-for="safeLiveable"></p>
+
+          <p class="sub-label">Is anything getting worse or urgent? <span class="optional">(tick any that apply)</span></p>
+          <div class="checklist" data-name="safetyIssues">
+            <label><input type="checkbox" name="safetyIssues" value="Water still coming in"><span>Water still coming in</span></label>
+            <label><input type="checkbox" name="safetyIssues" value="Security compromised"><span>Security compromised</span></label>
+            <label><input type="checkbox" name="safetyIssues" value="Unable to stay in the property"><span>Can't stay in the property</span></label>
+          </div>
+          <details class="why">
+            <summary>Why we ask</summary>
+            <p>This drives urgency. If something's getting worse we can authorise make-safe repairs
+               immediately (e.g. use your own plumber now) instead of making you wait for permission.</p>
+          </details>
+        </fieldset>
+
+        <!-- Estimated loss -->
         <div class="field">
           <label for="estimated-loss">Estimated loss ($)</label>
           <input type="number" id="estimated-loss" name="estimatedLoss" min="0" step="1"
@@ -78,6 +170,11 @@
           <button type="submit" class="btn btn-primary">Assess my claim</button>
         </div>
       </form>
+    </section>
+
+    <!-- SECTION 3: ASSESSMENT OUTCOME -->
+    <section id="outcome" class="step">
+      <h1>Claim assessment outcome</h1>
 
       <!-- Assessing spinner -->
       <div id="assessing" class="assessing" hidden>
@@ -126,10 +223,10 @@
             <p class="error" data-for="accountName"></p>
           </div>
           <div class="field">
-            <label for="routing-number">Routing number</label>
-            <input type="text" id="routing-number" name="routingNumber" inputmode="numeric"
-                   required placeholder="9 digits">
-            <p class="error" data-for="routingNumber"></p>
+            <label for="bsb-number">BSB number</label>
+            <input type="text" id="bsb-number" name="bsb" inputmode="numeric"
+                   required placeholder="6 digits (e.g. 062-000)">
+            <p class="error" data-for="bsb"></p>
           </div>
           <div class="field">
             <label for="account-number">Account number</label>
@@ -142,6 +239,19 @@
             <button type="submit" class="btn btn-primary">Confirm &amp; get paid</button>
           </div>
         </form>
+      </div>
+
+      <!-- Payment confirmed -->
+      <div id="paid" class="decision" hidden>
+        <div class="decision-badge badge-approved">✓</div>
+        <h2>Payment confirmed</h2>
+        <p>Your payout of <strong id="paid-amount"></strong> is on its way. It should arrive in your
+          nominated bank account within 1–3 business days
+          (ref <strong id="paid-ref"></strong>).</p>
+        <p>That's your claim sorted. Just a few quick questions to finish.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" data-goto="survey">Continue to survey →</button>
+        </div>
       </div>
 
       <!-- Full claim acknowledgement -->
@@ -159,7 +269,7 @@
       </div>
     </section>
 
-    <!-- SECTION 3: SURVEY -->
+    <!-- SECTION 4: SURVEY -->
     <section id="survey" class="step">
       <h1>How was that?</h1>
       <p class="lead">A few quick questions about your experience. Then you're done.</p>
@@ -252,7 +362,7 @@
         </div>
 
         <div class="actions">
-          <button type="button" class="btn btn-ghost" data-goto="claim">← Back</button>
+          <button type="button" class="btn btn-ghost" data-goto="outcome">← Back</button>
           <button type="submit" class="btn btn-primary">Finish</button>
         </div>
       </form>

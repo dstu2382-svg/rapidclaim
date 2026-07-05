@@ -12,10 +12,22 @@
       timestamp: new Date().toISOString(),
       // Which steps the tester has unlocked (reached by completing the prior
       // action). Drives the clickable progress nav at the top of the page.
-      progress: { intro: true, claim: false, survey: false },
-      claim: { name: "", claimType: "", estimatedLoss: null },
-      decision: { outcome: "", payout: null, reference: "", accepted: null, path: "" },
-      payment: { accountName: "", routingNumber: "", accountNumber: "" },
+      progress: { intro: true, claim: false, outcome: false, survey: false },
+      claim: {
+        name: "",
+        causeOfDamage: "",
+        dateOfDamage: "",
+        timeOfDamage: "",
+        damagedAreas: [],
+        damageExtent: "",
+        photoNames: [],
+        photoCount: 0,
+        safeLiveable: "",
+        safetyIssues: [],
+        estimatedLoss: null
+      },
+      decision: { outcome: "", title: "", message: "", badgeClass: "", payout: null, reference: "", accepted: null, path: "" },
+      payment: { accountName: "", bsb: "", accountNumber: "" },
       survey: {
         name: "", age: null, postcode: "", education: "", gender: "",
         madeClaimBefore: "", understandSolution: "", desiredOutcome: "", comments: ""
@@ -33,7 +45,7 @@
       // Older cached sessions may predate `progress` — backfill it so the
       // navigation logic always has something to read.
       if (!parsed.progress) {
-        parsed.progress = { intro: true, claim: false, survey: false };
+        parsed.progress = { intro: true, claim: false, outcome: false, survey: false };
       }
       return parsed;
     } catch (e) {
@@ -122,7 +134,15 @@
       ["field", "value"],
       ["timestamp", state.timestamp],
       ["name", state.claim.name],
-      ["claim_type", state.claim.claimType],
+      ["cause_of_damage", state.claim.causeOfDamage],
+      ["date_of_damage", state.claim.dateOfDamage],
+      ["time_of_damage", state.claim.timeOfDamage],
+      ["damaged_areas", (state.claim.damagedAreas || []).join("; ")],
+      ["damage_extent", state.claim.damageExtent],
+      ["photo_count", state.claim.photoCount],
+      ["photo_names", (state.claim.photoNames || []).join("; ")],
+      ["safe_liveable", state.claim.safeLiveable],
+      ["safety_issues", (state.claim.safetyIssues || []).join("; ")],
       ["estimated_loss", state.claim.estimatedLoss],
       ["decision_outcome", state.decision.outcome],
       ["payout", state.decision.payout],
@@ -130,7 +150,7 @@
       ["offer_accepted", state.decision.accepted],
       ["chosen_path", state.decision.path],
       ["payment_account_name", state.payment.accountName],
-      ["payment_routing_number", state.payment.routingNumber],
+      ["payment_bsb", state.payment.bsb],
       ["payment_account_number", state.payment.accountNumber],
       ["survey_name", state.survey.name],
       ["survey_age", state.survey.age],

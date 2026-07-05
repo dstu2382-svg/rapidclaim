@@ -196,6 +196,72 @@ textarea { resize: vertical; }
 
 input.invalid, select.invalid, textarea.invalid { border-color: var(--danger); }
 
+/* Side-by-side inputs (e.g. date + time) */
+.field-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+.field-row > * { flex: 1 1 140px; }
+
+/* Sub-label for a secondary control within a field/fieldset */
+.sub-label { display: block; font-weight: 600; margin: 1.1rem 0 .5rem; }
+
+/* "Why we ask" disclosures */
+.why { margin-top: .6rem; }
+.why summary {
+  cursor: pointer;
+  width: fit-content;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.why summary:hover { text-decoration: underline; }
+.why p {
+  margin: .5rem 0 0;
+  font-size: .85rem;
+  color: var(--muted);
+  background: var(--bg);
+  border-left: 3px solid var(--line);
+  padding: .6rem .8rem;
+  border-radius: 6px;
+}
+
+/* Multi-select checklist (damaged areas, safety issues) */
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .5rem;
+}
+.checklist label { margin: 0; font-weight: 500; cursor: pointer; }
+.checklist input { position: absolute; opacity: 0; width: 0; height: 0; }
+.checklist span {
+  display: block;
+  font-size: .85rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  transition: all .12s;
+}
+.checklist label:hover span { border-color: var(--accent); }
+.checklist input:checked + span {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.checklist input:focus-visible + span {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
+}
+
+/* File input */
+input[type="file"] {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  padding: .5rem;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
 /* Rating scale */
 .rating {
   display: flex;
@@ -434,4 +500,5 @@ tbody tr:hover { background: #fafbff; }
   .actions .btn { width: 100%; }
   .decision .actions, .thanks .actions { flex-direction: column; }
   .rating span { font-size: .72rem; }
+  .checklist { grid-template-columns: 1fr; }
 }

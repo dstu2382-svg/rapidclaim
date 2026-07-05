@@ -41,7 +41,14 @@
     claims: [
       ["Submitted", function (r) { return when(r.submittedAt); }],
       ["Name", function (r) { return r.claim.name; }],
-      ["Claim type", function (r) { return r.claim.claimType; }],
+      ["Cause", function (r) { return r.claim.causeOfDamage; }],
+      ["Date", function (r) { return r.claim.dateOfDamage; }],
+      ["Time", function (r) { return r.claim.timeOfDamage; }],
+      ["Damaged areas", function (r) { return (r.claim.damagedAreas || []).join("; "); }],
+      ["Extent", function (r) { return r.claim.damageExtent; }],
+      ["Photos", function (r) { return r.claim.photoCount || (r.claim.photoNames ? r.claim.photoNames.length : ""); }],
+      ["Safe/liveable", function (r) { return r.claim.safeLiveable; }],
+      ["Safety issues", function (r) { return (r.claim.safetyIssues || []).join("; "); }],
       ["Est. loss", function (r) { return usd(r.claim.estimatedLoss); }],
       ["Outcome", function (r) { return r.decision.outcome; }],
       ["Payout", function (r) { return usd(r.decision.payout); }],
@@ -49,7 +56,7 @@
       ["Path", function (r) { return r.decision.path === "full_claim" ? "Full claim" : (r.decision.path === "payout" ? "Payout" : ""); }],
       ["Accepted", function (r) { return yesNo(r.decision.accepted); }],
       ["Acct name", function (r) { return r.payment ? r.payment.accountName : ""; }],
-      ["Routing", function (r) { return r.payment ? r.payment.routingNumber : ""; }],
+      ["BSB", function (r) { return r.payment ? r.payment.bsb : ""; }],
       ["Account", function (r) { return r.payment ? r.payment.accountNumber : ""; }]
     ],
     survey: [
